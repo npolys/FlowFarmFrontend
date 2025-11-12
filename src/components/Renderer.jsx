@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 
+
 // 3D Model Renderer. Modify in future to load 3D models based on game state.
 function Render3D() {
   if (!window.x3dom) {
@@ -21,14 +22,10 @@ export default function Renderer() {
 
   return (
     <div style={{ margin: "1rem" }}>
-      <x3d width="1000px" height="250px">
+      <x3d width="1000px" height="250px" navigationType="NONE">
+        
         <scene>
-          <shape>
-            <appearance>
-              <material diffuseColor="0 0 1"></material>
-            </appearance>
-            <box></box>
-          </shape>
+          <inline url="fishtank.x3d" />
         </scene>
       </x3d>
     </div>
