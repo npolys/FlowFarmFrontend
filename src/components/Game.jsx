@@ -2,13 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import gameAPI from '../services/gameAPI';
 import Renderer from './Renderer';
-import './Game.css';
+import StatsSection from './StatsSection';
+import GillPopup from './GillPopup';
+import './WireframeGame.css';
 
 function Game() {
   const [gameState, setGameState] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [matchID, setMatchID] = useState(null);
+
+  const [gillText, setGillText] = useState("");
+  const [gillActive, setGillActive] = useState(false);
+
+  const [hasClickedOnWater, setHasClickedOnWater] = useState(false);
+  const [hasClickedOnPlants, setHasClickedOnPlants] = useState(false);
+  const [hasClickedOnFish, setHasClickedOnFish] = useState(false);
 
   // Initialize game on component mount
   useEffect(() => {
@@ -100,6 +109,35 @@ function Game() {
     }
   };
 
+  const handleStatsButton = async () => {
+
+  }
+
+  // Gill popup controls.
+  const activateGill = (text) => {
+    setGillText(text);
+    setGillActive(true);
+  }
+
+  const deactivateGill = () => {
+    setGillActive(false);
+  }
+
+  const handleSwitchStatsPage = (page) => {
+    if (page == "water" && !hasClickedOnWater) {
+      activateGill("Keeping an eye on your water quality is crucial for proper plant and fish health!");
+      setHasClickedOnWater(true);
+    }
+    else if (page == "plants" && !hasClickedOnPlants) {
+      activateGill("Plants need proper nutrients and care to thrive in your aquaponics system!");
+      setHasClickedOnPlants(true);
+    }
+    else if (page == "fish" && !hasClickedOnFish) {
+      activateGill("Healthy fish produce the nutrients your plants need. Make sure to feed them well!");
+      setHasClickedOnFish(true);
+    }
+  }
+
   if (!gameState) {
     return <div className="loading">Initializing game...</div>;
   }
@@ -108,7 +146,6 @@ function Game() {
 
   return (
     <div className="game-container">
-      
       <header className="game-header">
         <h1>🐟 Grow-n-Flow Aquaponics 🌱</h1>
         <div className="game-stats">
@@ -127,146 +164,32 @@ function Game() {
       )}
 
       <div className="game-grid">
-        {/* Fish Tank Section */}
-        <section className="fish-section">
-          <h2>🐟 Fish Tank</h2>
-          <div className="tank-info">
-            {G.fish && G.fish.length > 0 ? (
-              <div className="fish-list">
-                {G.fish.map((fishGroup, index) => (
-                  <div key={index} className="fish-item">
-                    <span className="fish-type">{fishGroup.type}</span>
-                    <span className="fish-count">x{fishGroup.count}</span>
-                    <span className="fish-health">❤️ {fishGroup.health}/10</span>
-                    <span className="fish-age">Age: {fishGroup.age} days</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-message">No fish yet. Add some to get started!</p>
-            )}
-          </div>
-          
-          <div className="action-buttons">
-            <button 
-              onClick={() => handleAddFish('tilapia', 5)} 
-              disabled={loading}
-              className="btn-primary"
-            >
-              Add 5 Tilapia 🐟
-            </button>
-            <button 
-              onClick={() => handleAddFish('goldfish', 3)} 
-              disabled={loading}
-              className="btn-primary"
-            >
-              Add 3 Goldfish 🐠
-            </button>
-            <button 
-              onClick={handleFeedFish} 
-              disabled={loading || !G.fish || G.fish.length === 0}
-              className="btn-secondary"
-            >
-              Feed Fish 🍞
-            </button>
-          </div>
-        </section>
 
-        {/* Plants Section */}
-        <section className="plants-section">
-          <h2>🌱 Grow Beds</h2>
-          <div className="plants-info">
-            {G.plants && G.plants.length > 0 ? (
-              <div className="plants-list">
-                {G.plants.map((plant) => (
-                  <div key={plant.id} className="plant-item">
-                    <span className="plant-type">{plant.cropType}</span>
-                    <span className="plant-growth">📊 {plant.growthStage}</span>
-                    <span className="plant-health">❤️ {plant.health}/10</span>
-                    {plant.growthStage === 'mature' && (
-                      <button 
-                        onClick={() => handleHarvestPlant(plant.id)}
-                        className="btn-harvest"
-                        disabled={loading}
-                      >
-                        Harvest 🌾
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-message">No plants yet. Plant some seeds!</p>
-            )}
-          </div>
-          
-          <div className="action-buttons">
-            <button 
-              onClick={() => handlePlantSeed('Lettuce')} 
-              disabled={loading}
-              className="btn-primary"
-            >
-              Plant Lettuce 🥬
-            </button>
-            <button 
-              onClick={() => handlePlantSeed('Tomato')} 
-              disabled={loading}
-              className="btn-primary"
-            >
-              Plant Tomato 🍅
-            </button>
-            <button 
-              onClick={() => handlePlantSeed('Basil')} 
-              disabled={loading}
-              className="btn-primary"
-            >
-              Plant Basil 🌿
-            </button>
-          </div>
+        <section className="renderer-section">
+          <Renderer />
         </section>
-
-        {/* Water Quality Section */}
-        <section className="water-section">
-          <h2>💧 Water Quality</h2>
-          {G.aquaponicsSystem && G.aquaponicsSystem.tank && (
-            <div className="water-stats">
-              <div className="stat-item">
-                <label>Ammonia:</label>
-                <span className={G.aquaponicsSystem.tank.water.ammonia > 1 ? 'danger' : ''}>
-                  {G.aquaponicsSystem.tank.water.ammonia.toFixed(2)} ppm
-                </span>
-              </div>
-              <div className="stat-item">
-                <label>Nitrite:</label>
-                <span className={G.aquaponicsSystem.tank.water.nitrite > 0.5 ? 'warning' : ''}>
-                  {G.aquaponicsSystem.tank.water.nitrite.toFixed(2)} ppm
-                </span>
-              </div>
-              <div className="stat-item">
-                <label>Nitrate:</label>
-                <span className="good">
-                  {G.aquaponicsSystem.tank.water.nitrate.toFixed(2)} ppm
-                </span>
-              </div>
-              <div className="stat-item">
-                <label>pH:</label>
-                <span>{G.aquaponicsSystem.tank.water.pH.toFixed(1)}</span>
-              </div>
-              <div className="stat-item">
-                <label>Temperature:</label>
-                <span>{G.aquaponicsSystem.tank.water.temperature}°C</span>
-              </div>
-              <div className="stat-item">
-                <label>Dissolved O₂:</label>
-                <span>{G.aquaponicsSystem.tank.water.dissolvedOxygen} mg/L</span>
-              </div>
-            </div>
-          )}
-        </section>
-
+        
         {/* Control Panel */}
         <section className="control-section">
           <h2>🎮 Game Controls</h2>
+          <button
+            onClick={handleStatsButton}
+          >
+            📊 Stats 
+          </button>
+          <button>
+            🎒 Inventory
+          </button>
+          <button>
+            📋 Community
+          </button>
+          <button>
+            🛒 Shop
+          </button>
+          <button>
+            🏪 Market
+          </button>
+          <br />
           <button 
             onClick={handleProgressTurn} 
             disabled={loading}
@@ -289,14 +212,12 @@ function Game() {
             New Game 🆕
           </button>
         </section>
-
-        <section className="renderer-section">
-          <Renderer />
+        <GillPopup gillText={gillText} active={gillActive} onClose={deactivateGill} />
+        <section className="popup-section">
+          <StatsSection gameState={gameState} loading={loading} handleAddFish={handleAddFish} handleFeedFish={handleFeedFish} handleSwitchPage={handleSwitchStatsPage}/>
         </section>
 
-        
       </div>
-      
       
 
       {loading && <div className="loading-overlay">Processing...</div>}

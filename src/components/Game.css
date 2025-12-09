@@ -95,12 +95,12 @@ section h2 {
   min-height: 300px;
 }
 
-.water-section, .control-section {
+.water-section, .control-section, .renderer-section, .popup-section {
   grid-column: span 2;
 }
 
 @media (max-width: 768px) {
-  .water-section, .control-section {
+  .water-section, .control-section, .renderer-section, .popup-section {
     grid-column: span 1;
   }
 }
