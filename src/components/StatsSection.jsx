@@ -5,9 +5,10 @@ import PlantsSection from './PlantsSection';
 import WaterSection from './WaterSection';
 
 
-const StatsSection = ({gameState, loading, handleAddFish, handleFeedFish, handleHarvestPlant, handlePlantSeed}) => {
+const StatsSection = ({gameState, loading, handleAddFish, handleFeedFish, handleHarvestPlant, handlePlantSeed, handleSwitchPage}) => {
 
     const [page, setPage] = useState("");
+
 
     if (!gameState) {
         return;
@@ -15,17 +16,21 @@ const StatsSection = ({gameState, loading, handleAddFish, handleFeedFish, handle
 
     const { G, ctx } = gameState;
     
+    const modifyPage = (newPage) => {
+        setPage(newPage);
+        handleSwitchPage(newPage);
+    }
     return (
         <div>
 
             <button
-                onClick={() => setPage("water")}    
+                onClick={() => modifyPage("water")}    
             >💧 Water</button>
             <button
-             onClick={() => setPage("plants")}>
+             onClick={() => modifyPage("plants")}>
                 🌱 Plants</button>
             <button
-                onClick={() => setPage("fish")}
+                onClick={() => modifyPage("fish")}
             >🐟 Fish</button>
             {page == "fish" && <FishTankSection gameState={gameState} loading={loading} handleAddFish={handleAddFish} handleFeedFish={handleFeedFish} /> } 
             {page == "plants" && <PlantsSection gameState={gameState} loading={loading} handleHarvestPlant={handleHarvestPlant} handlePlantSeed={handlePlantSeed} /> }

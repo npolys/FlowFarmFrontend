@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import gameAPI from '../services/gameAPI';
 import Renderer from './Renderer';
 import StatsSection from './StatsSection';
+import GillPopup from './GillPopup';
 import './WireframeGame.css';
 
 function Game() {
@@ -10,6 +11,13 @@ function Game() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [matchID, setMatchID] = useState(null);
+
+  const [gillText, setGillText] = useState("");
+  const [gillActive, setGillActive] = useState(false);
+
+  const [hasClickedOnWater, setHasClickedOnWater] = useState(false);
+  const [hasClickedOnPlants, setHasClickedOnPlants] = useState(false);
+  const [hasClickedOnFish, setHasClickedOnFish] = useState(false);
 
   // Initialize game on component mount
   useEffect(() => {
@@ -105,6 +113,31 @@ function Game() {
 
   }
 
+  // Gill popup controls.
+  const activateGill = (text) => {
+    setGillText(text);
+    setGillActive(true);
+  }
+
+  const deactivateGill = () => {
+    setGillActive(false);
+  }
+
+  const handleSwitchStatsPage = (page) => {
+    if (page == "water" && !hasClickedOnWater) {
+      activateGill("Keeping an eye on your water quality is crucial for proper plant and fish health!");
+      setHasClickedOnWater(true);
+    }
+    else if (page == "plants" && !hasClickedOnPlants) {
+      activateGill("Plants need proper nutrients and care to thrive in your aquaponics system!");
+      setHasClickedOnPlants(true);
+    }
+    else if (page == "fish" && !hasClickedOnFish) {
+      activateGill("Healthy fish produce the nutrients your plants need. Make sure to feed them well!");
+      setHasClickedOnFish(true);
+    }
+  }
+
   if (!gameState) {
     return <div className="loading">Initializing game...</div>;
   }
@@ -179,9 +212,9 @@ function Game() {
             New Game 🆕
           </button>
         </section>
-
+        <GillPopup gillText={gillText} active={gillActive} onClose={deactivateGill} />
         <section className="popup-section">
-          <StatsSection gameState={gameState} loading={loading} handleAddFish={handleAddFish} handleFeedFish={handleFeedFish}/>
+          <StatsSection gameState={gameState} loading={loading} handleAddFish={handleAddFish} handleFeedFish={handleFeedFish} handleSwitchPage={handleSwitchStatsPage}/>
         </section>
 
       </div>

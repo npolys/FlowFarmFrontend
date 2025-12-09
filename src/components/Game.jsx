@@ -108,6 +108,7 @@ function Game() {
 
   return (
     <div className="game-container">
+      
       <header className="game-header">
         <h1>🐟 Grow-n-Flow Aquaponics 🌱</h1>
         <div className="game-stats">
@@ -292,7 +293,10 @@ function Game() {
         <section className="renderer-section">
           <Renderer />
         </section>
+
+        
       </div>
+      
       
 
       {loading && <div className="loading-overlay">Processing...</div>}
