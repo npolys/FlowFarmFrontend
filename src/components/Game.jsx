@@ -4,7 +4,7 @@ import gameAPI from '../services/gameAPI';
 import Renderer from './Renderer';
 import StatsSection from './StatsSection';
 import GillPopup from './GillPopup';
-import './WireframeGame.css';
+import "./Game.css"
 
 function Game() {
   const [gameState, setGameState] = useState(null);
